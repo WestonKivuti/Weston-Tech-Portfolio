@@ -1,0 +1,138 @@
+'use strict';
+
+/* ---------- Project data: add new projects here ---------- */
+const projects = [
+  {
+    name: 'Parking System Project',
+    category: 'Java',           // Web | C/C++ | Java | JavaScript | Other
+    featured: true,
+    description: 'A modern parking system with a frontend and backend that lets an organization set and change parking prices.',
+    technologies: ['Java', 'HTML', 'CSS'],  // Add more here, e.g. the database
+    repo: 'https://github.com/WestonKivuti/Parking-System-Project',
+    demo: '',                   // Only set when a real deployment exists
+    screenshot: '',             // e.g. 'assets/images/parking.png'
+    screenshotAlt: '',
+    caseStudy: { problem: '', approach: '', technology: '', challenges: '', solution: '', result: '', lessons: '' }
+  }
+];
+
+/* ---------- Helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k === 'class' ? (e.className = v) : e.setAttribute(k, v);
+  kids.flat().forEach(c => e.append(c));
+  return e;
+};
+
+/* ---------- Theme ---------- */
+function initTheme() {
+  const btn = $('#theme-btn'), root = document.documentElement;
+  const sync = () => btn.setAttribute('aria-label', `Switch to ${root.dataset.theme === 'dark' ? 'light' : 'dark'} theme`);
+  sync();
+  btn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) { /* storage unavailable */ }
+    sync();
+  });
+}
+
+/* ---------- Navigation ---------- */
+function initNav() {
+  const menu = $('#menu-btn'), links = $('#nav-links');
+  const setOpen = open => { links.classList.toggle('open', open); menu.setAttribute('aria-expanded', open); menu.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); };
+  menu.addEventListener('click', () => setOpen(!links.classList.contains('open')));
+  links.addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
+
+  const navLinks = $$('a', links);
+  const spy = new IntersectionObserver(entries => entries.forEach(en => {
+    if (en.isIntersecting) navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
+  }), { rootMargin: '-40% 0px -55% 0px' });
+  $$('main section[id]').forEach(s => spy.observe(s));
+}
+
+/* ---------- Scroll effects ---------- */
+function initScroll() {
+  const bar = $('#progress'), top = $('#to-top');
+  let ticking = false;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    top.hidden = scrollY < 500;
+    ticking = false;
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  top.addEventListener('click', () => scrollTo({ top: 0 }));
+  update();
+
+  const io = new IntersectionObserver((entries, o) => entries.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add('in'); o.unobserve(en.target); }
+  }), { threshold: 0.1 });
+  $$('.reveal').forEach(n => io.observe(n));
+}
+
+/* ---------- Projects ---------- */
+function projectCard(p) {
+  const labels = { problem: 'Problem', approach: 'Approach', technology: 'Technology', challenges: 'Challenges', solution: 'Solution', result: 'Result', lessons: 'Lessons Learned' };
+  const study = el('dl');
+  for (const [k, label] of Object.entries(labels)) study.append(el('dt', {}, label), el('dd', {}, p.caseStudy[k] || 'To be added.'));
+  const tech = p.technologies.length
+    ? el('ul', { class: 'tags' }, p.technologies.map(t => el('li', {}, t)))
+    : el('p', { class: 'muted' }, 'Technologies: Add project technologies');
+  const links = el('div', { class: 'btns' }, el('a', { class: 'btn primary', href: p.repo, target: '_blank', rel: 'noopener noreferrer' }, 'View on GitHub'));
+  if (p.demo) links.append(el('a', { class: 'btn', href: p.demo, target: '_blank', rel: 'noopener noreferrer' }, 'Live Demo'));
+  return el('article', { class: 'card project' + (p.featured ? ' featured' : ''), 'data-category': p.category },
+    p.featured ? el('span', { class: 'badge' }, 'Featured project') : '',
+    p.screenshot ? el('img', { src: p.screenshot, alt: p.screenshotAlt || p.name, loading: 'lazy' }) : '',
+    el('h3', {}, p.name), el('p', {}, p.description), tech, links,
+    el('details', {}, el('summary', {}, 'Case study'), study));
+}
+
+function initProjects() {
+  const grid = $('#project-grid'), bar = $('#filters');
+  const cats = [...new Set(projects.map(p => p.category))];
+  const render = cat => grid.replaceChildren(...projects.filter(p => cat === 'All' || p.category === cat).map(projectCard));
+  render('All');
+  if (cats.length < 2) return;           // filters only appear when there is something to filter
+  bar.hidden = false;
+  ['All', ...cats].forEach(c => {
+    const b = el('button', { type: 'button', 'aria-pressed': c === 'All' }, c);
+    b.addEventListener('click', () => {
+      $$('button', bar).forEach(x => x.setAttribute('aria-pressed', x === b));
+      render(c);
+    });
+    bar.append(b);
+  });
+}
+
+/* ---------- Contact form (validation only, nothing is sent) ---------- */
+function initForm() {
+  const form = $('#contact-form'), status = $('#form-status');
+  const rules = {
+    name: v => v.trim().length >= 2 || 'Enter your name.',
+    email: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Enter a valid email address.',
+    message: v => v.trim().length >= 10 || 'Write at least 10 characters.'
+  };
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    let firstBad = null;
+    for (const [k, rule] of Object.entries(rules)) {
+      const f = form.elements[k], res = rule(f.value);
+      $('#' + k + '-err').textContent = res === true ? '' : res;
+      f.setAttribute('aria-invalid', res !== true);
+      if (res !== true && !firstBad) firstBad = f;
+    }
+    if (firstBad) { firstBad.focus(); status.textContent = ''; return; }
+    status.textContent = 'This form is not connected to an email service yet, so nothing was sent. Please email munyiweston@gmail.com directly.';
+  });
+}
+
+/* ---------- Init ---------- */
+initTheme();
+initNav();
+initProjects();
+initScroll();
+initForm();
+$('#year').textContent = new Date().getFullYear();
