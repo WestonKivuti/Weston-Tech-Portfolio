@@ -37,6 +37,24 @@ header{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px s
   .links a{padding:.8rem 0}
 }
 .hero{padding:6rem 0 4rem}
+.hero-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(220px,.6fr);
+  gap:3rem;
+  align-items:center;
+}
+.hero-photo{
+  width:100%;
+  max-width:340px;
+  aspect-ratio:4/5;
+  object-fit:cover;
+  border-radius:18px;
+  justify-self:end;
+}
+@media(max-width:700px){
+  .hero-layout{grid-template-columns:1fr}
+  .hero-photo{justify-self:start;max-width:280px}
+}
 .hero h1{font-size:clamp(2.8rem,10vw,5rem);letter-spacing:-.04em;margin-bottom:.4rem}
 .role{font-size:clamp(1.1rem,3vw,1.5rem);color:var(--accent);margin-bottom:1.25rem}
 .hero .wrap>*{animation:rise .7s both}
