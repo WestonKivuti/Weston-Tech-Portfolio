@@ -109,13 +109,14 @@ function initProjects() {
 
 /* ---------- Contact form (validation only, nothing is sent) ---------- */
 function initForm() {
+  const FORM_ENDPOINT = 'https://formspree.io/f/xljbdawg';
   const form = $('#contact-form'), status = $('#form-status');
   const rules = {
     name: v => v.trim().length >= 2 || 'Enter your name.',
     email: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Enter a valid email address.',
     message: v => v.trim().length >= 10 || 'Write at least 10 characters.'
   };
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     let firstBad = null;
     for (const [k, rule] of Object.entries(rules)) {
@@ -125,7 +126,31 @@ function initForm() {
       if (res !== true && !firstBad) firstBad = f;
     }
     if (firstBad) { firstBad.focus(); status.textContent = ''; return; }
-    status.textContent = 'This form is not connected to an email service yet, so nothing was sent. Please email munyiweston@gmail.com directly.';
+    if (FORM_ENDPOINT.includes('YOUR_FORM_ID')) {
+      status.textContent = 'This form is not connected yet. Please email munyiweston@gmail.com directly.';
+      return;
+    }
+    status.textContent = 'Sending...';
+    try {
+      const res = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+      if (!res.ok) throw new Error('Request failed');
+      form.reset();
+      status.textContent = 'Thank you! Your message has been sent.';
+    } catch (err) {
+      status.textContent = 'Sorry, something went wrong. Please email munyiweston@gmail.com directly.';
+    }
+  });
+}
+
+/* ---------- CV download ---------- */
+const CV_READY = false;   // change to true once assets/Weston-CV.pdf is added
+
+function initCV() {
+  const btn = $('#cv-btn'), note = $('#cv-note');
+  btn.addEventListener('click', e => {
+    if (CV_READY) return;
+    e.preventDefault();
+    note.textContent = 'My CV has not been added yet. Please come back later. Thank you for your patience.';
   });
 }
 
@@ -134,5 +159,6 @@ initTheme();
 initNav();
 initProjects();
 initScroll();
+initCV();
 initForm();
 $('#year').textContent = new Date().getFullYear();

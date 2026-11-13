@@ -100,3 +100,4 @@ footer{border-top:1px solid var(--border);padding:2.5rem 0}
   .hero .wrap>*{animation:none}
   .js .reveal{opacity:1;transform:none;transition:none}
 }
+#cv-note{margin-top:.75rem}
