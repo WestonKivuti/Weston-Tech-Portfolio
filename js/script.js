@@ -6,7 +6,7 @@ const projects = [
     name: 'Parking System Project',
     category: 'Java',           // Web | C/C++ | Java | JavaScript | Other
     featured: true,
-    description: 'A modern parking system with a frontend and backend that lets an organization set and change parking prices.',
+    description: 'A modern parking system that records vehicles as they enter and exit parking and automatically calculates the cost of their stay.',
     technologies: ['Java', 'HTML', 'CSS'],  // Add more here, e.g. the database
     repo: 'https://github.com/WestonKivuti/Parking-System-Project',
     demo: '',                   // Only set when a real deployment exists
@@ -107,7 +107,7 @@ function initProjects() {
   });
 }
 
-/* ---------- Contact form (validation only, nothing is sent) ---------- */
+/* ---------- Contact form ---------- */
 function initForm() {
   const FORM_ENDPOINT = 'https://formspree.io/f/xljbdawg';
   const form = $('#contact-form'), status = $('#form-status');
