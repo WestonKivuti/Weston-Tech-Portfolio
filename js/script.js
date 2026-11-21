@@ -53,6 +53,33 @@ function initNav() {
   $$('main section[id]').forEach(s => spy.observe(s));
 }
 
+/* ---------- One page at a time ---------- */
+function initPages() {
+  const sections = $$('main > section[id]');
+  const navLinks = $$('#nav-links a');
+  let current = null;
+
+  const show = id => {
+    sections.forEach(s => { s.hidden = s.id !== id; });
+    $$('.reveal', document.getElementById(id)).forEach(n => n.classList.add('in'));
+    navLinks.forEach(a => {
+      const on = a.getAttribute('href') === '#' + id;
+      a.classList.toggle('active', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const route = () => {
+    const id = location.hash.slice(1);
+    if (sections.some(s => s.id === id)) { current = id; show(id); }
+    else if (!current) { current = 'home'; show('home'); }
+  };
+
+  addEventListener('hashchange', route);
+  route();
+}
+
 /* ---------- Scroll effects ---------- */
 function initScroll() {
   const bar = $('#progress'), top = $('#to-top');
@@ -107,7 +134,7 @@ function initProjects() {
   });
 }
 
-/* ---------- Contact form ---------- */
+/* ---------- Contact form---------- */
 function initForm() {
   const FORM_ENDPOINT = 'https://formspree.io/f/xljbdawg';
   const form = $('#contact-form'), status = $('#form-status');
@@ -154,11 +181,12 @@ function initCV() {
   });
 }
 
-/* ---------- Init ---------- */
+/* ---------- init ---------- */
 initTheme();
 initNav();
+initPages();
 initProjects();
 initScroll();
-initCV();
 initForm();
+initCV();
 $('#year').textContent = new Date().getFullYear();
