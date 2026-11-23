@@ -100,6 +100,15 @@ function initScroll() {
   $$('.reveal').forEach(n => io.observe(n));
 }
 
+/* ---------- Skills data: add a new language or tool here ---------- */
+const skills = {
+  'Programming Languages': ['C', 'C++', 'Java', 'JavaScript'],
+  'Web Technologies': ['HTML5', 'CSS3', 'JavaScript'],
+  'Development Tools': ['Git', 'GitHub', 'VS Code'],
+  'Areas of Interest': ['Artificial Intelligence', 'Cloud Computing', 'Software Engineering', 'Web Development'],
+  'Currently Learning': ['Software engineering practices', 'Artificial Intelligence', 'Cloud Computing']
+};
+
 /* ---------- Projects ---------- */
 function projectCard(p) {
   const labels = { problem: 'Problem', approach: 'Approach', technology: 'Technology', challenges: 'Challenges', solution: 'Solution', result: 'Result', lessons: 'Lessons Learned' };
@@ -112,7 +121,7 @@ function projectCard(p) {
   if (p.demo) links.append(el('a', { class: 'btn', href: p.demo, target: '_blank', rel: 'noopener noreferrer' }, 'Live Demo'));
   return el('article', { class: 'card project' + (p.featured ? ' featured' : ''), 'data-category': p.category },
     p.featured ? el('span', { class: 'badge' }, 'Featured project') : '',
-    p.screenshot ? el('img', { src: p.screenshot, alt: p.screenshotAlt || p.name, loading: 'lazy' }) : '',
+    media(p),
     el('h3', {}, p.name), el('p', {}, p.description), tech, links,
     el('details', {}, el('summary', {}, 'Case study'), study));
 }
@@ -181,10 +190,25 @@ function initCV() {
   });
 }
 
+function initSkills() {
+  $('#skills-grid').replaceChildren(...Object.entries(skills).map(([title, items]) =>
+    el('div', { class: 'card' }, el('h3', {}, title), el('ul', { class: 'tags' }, items.map(i => el('li', {}, i))))));
+}
+
+function media(p) {
+  const box = el('div', { class: 'media' });
+  box.append(
+    p.screenshot ? el('img', { src: p.screenshot, alt: p.screenshotAlt || p.name, loading: 'lazy' }) : el('span', { class: 'ph', 'aria-hidden': 'true' }, p.category),
+    el('a', { class: 'view', href: p.repo, target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'View ' + p.name + ' on GitHub' }, 'View Project')
+  );
+  return box;
+}
+
 /* ---------- init ---------- */
 initTheme();
 initNav();
 initPages();
+initSkills();
 initProjects();
 initScroll();
 initForm();
