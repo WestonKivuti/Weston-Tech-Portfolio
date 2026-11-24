@@ -10,8 +10,8 @@ const projects = [
     technologies: ['Java', 'HTML', 'CSS'],  // Add more here, e.g. the database
     repo: 'https://github.com/WestonKivuti/Parking-System-Project',
     demo: '',                   // Only set when a real deployment exists
-    screenshot: '',             // e.g. 'assets/images/parking.png'
-    screenshotAlt: '',
+    screenshot: 'assets/images/parking.jpg',
+    screenshotAlt: 'Illustration of cars in a parking lot',
     caseStudy: { problem: '', approach: '', technology: '', challenges: '', solution: '', result: '', lessons: '' }
   }
 ];
@@ -197,9 +197,11 @@ function initSkills() {
 
 function media(p) {
   const box = el('div', { class: 'media' });
+  const pill = el('span', { class: 'pill' });
+  pill.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>View Project';
   box.append(
     p.screenshot ? el('img', { src: p.screenshot, alt: p.screenshotAlt || p.name, loading: 'lazy' }) : el('span', { class: 'ph', 'aria-hidden': 'true' }, p.category),
-    el('a', { class: 'view', href: p.repo, target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'View ' + p.name + ' on GitHub' }, 'View Project')
+    el('a', { class: 'view', href: p.repo, target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'View ' + p.name + ' on GitHub' }, pill)
   );
   return box;
 }
