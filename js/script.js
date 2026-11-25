@@ -105,7 +105,7 @@ const skills = {
   'Programming Languages': ['C', 'C++', 'Java', 'JavaScript'],
   'Web Technologies': ['HTML5', 'CSS3', 'JavaScript'],
   'Development Tools': ['Git', 'GitHub', 'VS Code'],
-  'Areas of Interest': ['AI/ML', 'Cloud Computing', 'Software Engineering', 'Web Development'],
+  'Areas of Interest': ['AI/ML', 'Cloud Computing', 'Software Engineering', 'Cyber security', 'Web Development'],
   'Currently Learning': ['Software engineering ', 'AI/ML', 'Cloud Computing']
 };
 
